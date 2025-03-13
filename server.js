@@ -10,11 +10,11 @@ app.use(bodyParser.json());
 
 // sql connection config
 const db = mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || '3306',
-    user: process.env.DB_USER || '${{ secrets.USER }}',
-    password: process.env.DB_PASS || '${{ secrets.PASSWORD }}',
-    database: process.env.DB_NAME || 'testDB'
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 // connect to mysql
@@ -47,7 +47,7 @@ app.post('/submit', (req, res) => {
 });
 
 // start server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app. listen(PORT, () => {
     console.log(`Server running on http://${PORT}`);
 });
