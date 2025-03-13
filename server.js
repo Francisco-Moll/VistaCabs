@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 // sql connection config
 const db = mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
+    host: process.env.DB_HOST || '3306',
     user: process.env.DB_USER || '${{ secrets.USER }}',
     password: process.env.DB_PASS || '${{ secrets.PASSWORD }}',
     database: process.env.DB_NAME || 'testDB'
