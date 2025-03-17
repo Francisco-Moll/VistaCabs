@@ -27,7 +27,7 @@ const handler = async (event) => {
         const result = getFormJSON(formElem);
 
         try {
-            const response = await fetch('http://localhost:3000/submit', {
+            const response = await fetch('/submit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -36,11 +36,18 @@ const handler = async (event) => {
             });
             
             const data = await response.json();
-            alert(data.message);
-        } catch (error) {
 
+            if (response.ok) {
+                alert("Product logged successfully!");
+                formElem.reset();
+            } else {
+                alert(`Error: ${data.message || 'Failed to log product.'}`);
+            }
+        } catch (error) {
+            console.error("Request faild:", error);
+            alert("Server connection failed. Please try again.");
         }
     }
 };
 
-formElem.addEventListener("submit", handler);
+formElem.addEventListener('submit', handler);
