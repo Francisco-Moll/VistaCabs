@@ -64,7 +64,7 @@ app.post('/submit', (req, res) => {
             console.error('Database insertion error:', err);
             return res.status(500).json({ message: 'Database error' });
         }
-        res.json({ message: 'Product added successfullyu!', data: result });
+        res.json({ message: 'Product added successfully!', data: result });
     });
 });
 
