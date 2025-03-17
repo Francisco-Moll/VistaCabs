@@ -1,3 +1,3 @@
 Vista Cabinets and Remodeling inventory manager
 
-v1.0
+v1.1
