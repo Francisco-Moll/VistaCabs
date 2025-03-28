@@ -64,3 +64,19 @@ foreach ($user in $contributorUsers) {
 # modify member sharepoint access
 # connection details
 Connect-PnPOnline -Scopes "Group.Read.All", "Sites.ReadWrite.All" -Interactive
+
+$siteUrl = (Get-PnPMicrosoft365Group -Identity $group).SiteUrl
+
+#reconnect directly to sharepoint
+Connect-PnPOnline -Url $siteUrl -Interactive
+
+#grant contribute permissions
+foreach ($user in $contributorUsers) {
+    try {
+        Set-PnPWebPermission -User $user -AddRole "Contribute"
+        Write-Host "Granted contribute permissions to $user on Sharepoint."
+    }
+    catch {
+        Write-Warning "Could not grant contribute permissions to ${user}: $_"
+    }
+}
