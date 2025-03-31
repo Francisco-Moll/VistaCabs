@@ -1,9 +1,11 @@
-# ------------------------------
 # Config
-# ------------------------------
 
 $adminUPN = "famoll@mollcgc.com"
 $groupEmail = "mcal@franciscomoll.onmicrosoft.com"
+
+$clientId = "1cb3a24b-d964-47d5-8cf2-33ea97d2b0f8"
+$tenantId = "fb7e002b-934b-4435-8358-23195e6bf22d"
+$siteUrl = "https://franciscomoll.sharepoint.com/sites/mcal"
 
 $ownerUsers = @(
     "fmoll@mollcgc.com",
@@ -13,9 +15,8 @@ $contributorUsers = @(
     "isidro.ramirez@mollcgc.com"
 )
 
-# ------------------------------
+
 # Exchange: Group Membership + Calendar Permissions
-# ------------------------------
 
 Write-Host "`n[+] Connecting to Exchange Online..."
 Connect-ExchangeOnline -UserPrincipalName $adminUPN
@@ -61,34 +62,49 @@ foreach ($user in $contributorUsers) {
     }
 }
 
-# ------------------------------
+
 # SharePoint: Grant Contribute Access
-# ------------------------------
 
 Write-Host "`n[+] Connecting to SharePoint via PnP..."
-Connect-PnPOnline -Interactive
 
-# Attempt to get group site URL
 try {
-    $siteUrl = (Get-PnPMicrosoft365Group -Identity $groupEmail).SiteUrl
-    Write-Host "Retrieved SharePoint site URL: $siteUrl"
+    Connect-PnPOnline -Url $siteUrl -ClientId $clientId -Tenant $tenantId -Interactive
+    Write-Host "Connected to Sharepoint."
 } catch {
-    Write-Warning "Could not retrieve site URL for group $groupEmail. Please confirm group exists."
+    Write-Error "Failed to connect to Sharepoint: $_"
     return
 }
 
-# Reconnect to site
-Connect-PnPOnline -Url $siteUrl -Interactive
-
-# Grant Contribute permissions
 foreach ($user in $contributorUsers) {
     try {
         Set-PnPWebPermission -User $user -AddRole "Contribute"
-        Write-Host "Granted Contribute permissions to $user on SharePoint site."
+        Write-Host "Granted contribute permissions to $user"
     } catch {
-        Write-Warning "Could not grant Contribute permissions to ${user}: $_"
+        Write-Warning "Could not grant contribute permissions to ${user}: $_"
     }
 }
+
+# # Attempt to get group site URL
+# try {
+#     $siteUrl = "https://franciscomoll.sharepoint.com/sites/mcal"
+#     Write-Host "Retrieved SharePoint site URL: $siteUrl"
+# } catch {
+#     Write-Warning "Could not retrieve site URL for group $groupEmail. Please confirm group exists."
+#     return
+# }
+
+# # Reconnect to site
+# Connect-PnPOnline -Url $siteUrl -Interactive
+
+# # Grant Contribute permissions
+# foreach ($user in $contributorUsers) {
+#     try {
+#         Set-PnPWebPermission -User $user -AddRole "Contribute"
+#         Write-Host "Granted Contribute permissions to $user on SharePoint site."
+#     } catch {
+#         Write-Warning "Could not grant Contribute permissions to ${user}: $_"
+#     }
+# }
 
 # # module check
 # Import-Module ExchangeOnlineManagement -ErrorAction SilentlyContinue
