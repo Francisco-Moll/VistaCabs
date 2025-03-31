@@ -1,4 +1,7 @@
+# ------------------------------
 # Config
+# ------------------------------
+
 $adminUPN = "famoll@mollcgc.com"
 $groupEmail = "mcal@franciscomoll.onmicrosoft.com"
 
@@ -10,11 +13,17 @@ $contributorUsers = @(
     "isidro.ramirez@mollcgc.com"
 )
 
-# Exchange Config
+# ------------------------------
+# Exchange: Group Membership + Calendar Permissions
+# ------------------------------
+
+Write-Host "`n[+] Connecting to Exchange Online..."
 Connect-ExchangeOnline -UserPrincipalName $adminUPN
+
+# Add Owners
 foreach ($owner in $ownerUsers) {
     try {
-        Add-UnifiedGroupLinks -Identity $groupEmail -LinkType Members -Link $owner -ErrorAction Stop
+        Add-UnifiedGroupLinks -Identity $groupEmail -LinkType Members -Links $owner -ErrorAction Stop
         Write-Host "Added $owner as a member of the group."
     } catch {
         Write-Warning "Could not add $owner as member: $_"
@@ -28,7 +37,7 @@ foreach ($owner in $ownerUsers) {
     }
 }
 
-# Add contributors and grant calendar access
+# Add Contributors and Grant Calendar Access
 $calendarIdentity = "${groupEmail}:\Calendar"
 
 foreach ($user in $contributorUsers) {
@@ -45,23 +54,39 @@ foreach ($user in $contributorUsers) {
     } catch {
         try {
             Add-MailboxFolderPermission -Identity $calendarIdentity -User $user -AccessRights Reviewer
-            Write-Host "Added reviewer permissions for $user on group calendar"
+            Write-Host "Added reviewer permissions for $user on group calendar."
         } catch {
             Write-Error "Could not set calendar permissions for ${user}: $_"
         }
     }
 }
 
-# Grant Sharepoint contribute access
+# ------------------------------
+# SharePoint: Grant Contribute Access
+# ------------------------------
+
+Write-Host "`n[+] Connecting to SharePoint via PnP..."
 Connect-PnPOnline -Interactive
-$siteUrl = (Get-PnPMicrosoft365 -Identity $groupEmail).SiteUrl
+
+# Attempt to get group site URL
+try {
+    $siteUrl = (Get-PnPMicrosoft365Group -Identity $groupEmail).SiteUrl
+    Write-Host "Retrieved SharePoint site URL: $siteUrl"
+} catch {
+    Write-Warning "Could not retrieve site URL for group $groupEmail. Please confirm group exists."
+    return
+}
+
+# Reconnect to site
 Connect-PnPOnline -Url $siteUrl -Interactive
+
+# Grant Contribute permissions
 foreach ($user in $contributorUsers) {
     try {
         Set-PnPWebPermission -User $user -AddRole "Contribute"
-        Write-Host "Granted contributor permissions to $user on Sharepoint."
+        Write-Host "Granted Contribute permissions to $user on SharePoint site."
     } catch {
-        Write-Warning "Could not grant contributor permissions to ${user}: $_"
+        Write-Warning "Could not grant Contribute permissions to ${user}: $_"
     }
 }
 
