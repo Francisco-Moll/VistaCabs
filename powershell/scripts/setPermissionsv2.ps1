@@ -2,21 +2,16 @@
 $adminUPN = "famoll@mollcgc.com"
 $groupEmail = "mcal@franciscomoll.onmicrosoft.com"
 
-# Users to be made owners
 $ownerUsers = @(
     "fmoll@mollcgc.com",
     "agnes.moll@mollcgc.com"
 )
-
-# Users to have contribute access (Sharepoint, Calendar Viewer)
 $contributorUsers = @(
     "isidro.ramirez@mollcgc.com"
 )
 
 # Exchange Config
 Connect-ExchangeOnline -UserPrincipalName $adminUPN
-
-# Add owners
 foreach ($owner in $ownerUsers) {
     try {
         Add-UnifiedGroupLinks -Identity $groupEmail -LinkType Members -Link $owner -ErrorAction Stop
