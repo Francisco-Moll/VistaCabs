@@ -79,15 +79,24 @@ try {
 }
 foreach ($user in $contributorUsers) {
     try {
-        Remove-PnPRoleAssignment -Principal $user -List "Site Pages"
-        Write-Host "Removed ${user}'s edit access to Site Pages." -ForegroundColor Green
+        Set-PnPListItemPermission -List "Site Pages" -User $user -AddRole "Read"
+        Write-Host "Set read access to Site Pages for ${user}." -ForegroundColor Green
     } catch {
-        Write-Warning "Could not remove access for ${user}: $_"
-    }
-    try {
-        Grant-PnPRoleAssignment -Principal $user -List "Site Pages"  -RoleDefinitionName "Read"
-        Write-Host "Granted read access to Site Pages for ${user}."
-    } catch {
-        Write-Warning "Could not grant read access to ${user}: $_"
+        Write-Warning "Could not set read access to Site Pages for ${user}: $_"
     }
 }
+
+# foreach ($user in $contributorUsers) {
+#     try {
+#         Remove-PnPRoleAssignment -Principal $user -List "Site Pages"
+#         Write-Host "Removed ${user}'s edit access to Site Pages." -ForegroundColor Green
+#     } catch {
+#         Write-Warning "Could not remove access for ${user}: $_"
+#     }
+#     try {
+#         Grant-PnPRoleAssignment -Principal $user -List "Site Pages"  -RoleDefinitionName "Read"
+#         Write-Host "Granted read access to Site Pages for ${user}."
+#     } catch {
+#         Write-Warning "Could not grant read access to ${user}: $_"
+#     }
+# }
