@@ -72,20 +72,20 @@ foreach ($user in $contributorUsers) {
 # Restrict News Posts
 Write-Host "`n[+] Locking down Site Pages..." -ForegroundColor Cyan
 try {
-    Set-PnPListPermssion -Identity "Site Pages" -BreakRoleInheritance -CopyRoleAssignments:$true -ClearSubscopes:$true
+    Set-PnPList -Identity "Site Pages" -BreakRoleInheritance -CopyRoleAssignments:$true -ClearSubscopes:$true
     Write-Host "Broke permission inheritance on Site Pages." -ForegroundColor Yellow
 } catch {
     Write-Warning "Could not break inheritance on Site Pages: $_"
 }
 foreach ($user in $contributorUsers) {
     try {
-        Remove-PnPListItemPermission -List "Site Pages" -User $user -Force
+        Remove-PnPRoleAssignment -Principal $user -List "Site Pages"
         Write-Host "Removed ${user}'s edit access to Site Pages." -ForegroundColor Green
     } catch {
         Write-Warning "Could not remove access for ${user}: $_"
     }
     try {
-        Add-PnPListItemPermission -List "Site Pages" -User $user -AddRole "Read"
+        Grant-PnPRoleAssignment -Principal $user -List "Site Pages"  -RoleDefinitionName "Read"
         Write-Host "Granted read access to Site Pages for ${user}."
     } catch {
         Write-Warning "Could not grant read access to ${user}: $_"
