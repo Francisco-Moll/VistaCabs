@@ -79,10 +79,10 @@ try {
 }
 foreach ($user in $contributorUsers) {
     try {
-        Add-PnPUserToGroup -LoginName $user -Identity "Visitors"
-        Write-Host "Added ${user} to SharePoint Visitors group." -ForegroundColor Green
+        Add-PnPGroupMember -LoginName $user -Group "Mcal Visitors"
+        Write-Host "Given $user read-only access." -ForegroundColor Green
     } catch {
-        Write-Warning "Could not set read access to Site Pages for ${user}: $_"
+        Write-Warning "Could not add $user to Visitors group: $_"
     }
 }
 
