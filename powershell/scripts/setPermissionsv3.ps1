@@ -69,7 +69,7 @@ try {
     return
 }
 
-# Grant Contribute permission
+# Grant Contribute permission to site (general) but lock down Site Pages
 foreach ($user in $contributorUsers) {
     try {
         Set-PnPWebPermission -User $user -AddRole "Contribute"
@@ -86,13 +86,16 @@ try {
     Set-PnPList -Identity $sitePagesList -BreakRoleInheritance -CopyRoleAssignments:$false -ErrorAction Stop
     Write-Host "Broke permission inheritance on Site Pages." -ForegroundColor Yellow
 
+    $sitePages = Get-PnPListItem -List "Site Pages"
+
     foreach ($user in $contributorUsers) {
-        try {
-            Remove-PnPGroupMember -LoginName $user -Group "Mcal Members"
-            Add-PnPGroupMember -LoginName $user -Group "Mcal Visitors"
-            Write-Host "Adjusted $user to 'Visitors' for Site Pages." -ForegroundColor Green
-        } catch {
-            Write-Warning "Could not adjust Site Pages access for ${user}: $_"
+        foreach ($item in $sitePages) {
+            try {
+                Set-PnPListItemPermission -List "Site Pages" -Identity $item.Id -User $user -AddRole "Read"
+                Write-Host "Granted read access to $user for Site Page '$($item.FieldValues['FileLeafRef'])'" -ForegroundColor Green
+            } catch {
+                Write-Warning "Could not set read access to Site Page '$($item.Id)' for ${user}: $_"
+            }
         }
     }
 } catch {
