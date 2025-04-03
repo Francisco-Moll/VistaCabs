@@ -4,7 +4,8 @@
 $adminUPN = "famoll@mollcgc.com"
 $groupEmail = "mcal@franciscomoll.onmicrosoft.com"
 $calendarIdentity = "mcal@franciscomoll.onmicrosoft.com:\Calendar"
-$siteUrl = "https://franciscomoll.sharepoint.com/sites/mcal"
+
+# URL = "https://franciscomoll.sharepoint.com/sites/mcal"
 
 $ownerUsers = @(
     "fmoll@mollcgc.com",
