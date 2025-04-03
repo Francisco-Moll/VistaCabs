@@ -79,8 +79,8 @@ try {
 }
 foreach ($user in $contributorUsers) {
     try {
-        Set-PnPListItemPermission -List "Site Pages" -User $user -AddRole "Read"
-        Write-Host "Set read access to Site Pages for ${user}." -ForegroundColor Green
+        Add-PnPUserToGroup -LoginName $user -Identity "Visitors"
+        Write-Host "Added ${user} to SharePoint Visitors group." -ForegroundColor Green
     } catch {
         Write-Warning "Could not set read access to Site Pages for ${user}: $_"
     }
